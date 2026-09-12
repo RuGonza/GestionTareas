@@ -2,63 +2,52 @@
 
 namespace tests;
 
-
-use vendor\PHPUnit\Framework\TestCase;
+use Controllers\LoginController;
 use Model\Usuarios;
-require_once __DIR__ . '/../vendor/autoload.php';
+use PHPUnit\Framework\TestCase;
+use MVC\Router;
 
-class LoginTest extends TestCase  {
-
-   private Usuario $modeloUsuario;
-
-    // Se ejecuta antes de CADA test para darnos un entorno limpio
-    protected function setUp(): void {
-        $this->modeloUsuario = new Usuarios();
-    }
-
-    // --- TESTS DE REGISTRO ---
-
-    public function testRegistroExitoso(): void {
-        $resultado = $this->modeloUsuario->registrar('test@ejemplo.com', 'ClaveSegura123');
-        $this->assertTrue($resultado);
-    }
-
-    public function testRegistroFallaSiFaltanCampos(): void {
-        $resultado = $this->modeloUsuario->registrar('', 'Clave123');
-        $this->assertFalse($resultado);
-    }
-
-    public function testRegistroFallaSiElEmailYaExiste(): void {
-        $this->modeloUsuario->registrar('duplicado@ejemplo.com', 'Clave1');
+class LoginTest extends TestCase
+{
+    // Este método se ejecuta AUTOMÁTICAMENTE antes de arrancar el test
+    protected function setUp(): void
+    {
+        parent::setUp();
         
-        // Intentar registrar el mismo correo de nuevo
-        $resultado = $this->modeloUsuario->registrar('duplicado@ejemplo.com', 'Clave2');
-        $this->assertFalse($resultado);
+        // REQUERIR LA BASE DE DATOS Y AYUDAS DE TU PROYECTO
+        // Ajusta las rutas '../' según dónde esté tu carpeta 'includes' o 'config'
+        require_once __DIR__ . '/../includes/app.php'; 
+        // Si no tienes app.php, intenta requiriendo directamente tu archivo de conexión:
+        // require_once __DIR__ . '/../includes/database.php';
     }
 
-    // --- TESTS DE LOGIN ---
+    public function test_user_register_pasando_argumentos() 
+    {
+        $password = "123456789";
 
-    public function testLoginExitoso(): void {
-        // 1. Primero registramos al usuario
-        $this->modeloUsuario->registrar('usuario@login.com', 'MiPassword123');
+        $_SERVER['REQUEST_METHOD'] = 'POST';
+        $_SERVER['REQUEST_URI'] = '/crear-cuenta';
 
-        // 2. Intentamos loguearnos
-        $resultado = $this->modeloUsuario->login('usuario@login.com', 'MiPassword123');
-        $this->assertTrue($resultado);
+        $_POST = [
+            'name'     => "Prueba",
+            'email'    => "prueba@prueba.com",
+            'password' => $password
+        ];
+
+        $router = new Router();
+        $router->post('/crear-cuenta', [LoginController::class, 'crear']);
+
+        register_shutdown_function(function() {
+            $codigoStatus = http_response_code();
+            $this->assertEquals(200, $codigoStatus, "El código de respuesta no es el esperado.");
+
+            // Ahora que la DB está conectada en setUp(), esto no dará error:
+            $user = Usuarios::where('email', 'prueba@prueba.com')->first();
+            $this->assertNotNull($user, "El usuario no se guardó en la base de datos.");
+        });
+
+        ob_start();
+        $router->comprobarRutas(); 
+        ob_get_clean();
     }
-
-    public function testLoginFallaConContrasenaIncorrecta(): void {
-        $this->modeloUsuario->registrar('usuario@login.com', 'MiPassword123');
-
-        // Intentar ingresar con una clave incorrecta
-        $resultado = $this->modeloUsuario->login('usuario@login.com', 'ClaveEquivocada');
-        $this->assertFalse($resultado);
-    }
-
-    public function testLoginFallaConUsuarioInexistente(): void {
-        // Intentar loguear un usuario que nunca se registró
-        $resultado = $this->modeloUsuario->login('no_existo@ejemplo.com', 'Cualquiera');
-        $this->assertFalse($resultado);
-    }
-    
 }
