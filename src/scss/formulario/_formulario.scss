@@ -1,0 +1,47 @@
+@use '../base/variables' as v;
+@use '../base/mixins' as m;
+
+.nombre-pagina,
+.descripcion-pagina {
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 1rem 0;
+}
+.formulario {
+    width: 50%;
+    margin: 0 auto;
+}
+
+.campo {
+    display: flex;
+    margin-bottom: 2rem;
+    align-items: center;
+    gap: 1rem;
+
+
+    input {
+        flex: 1;
+        border: none;
+        padding: calc(v.$separacion / 4);
+        border-radius: 1rem;
+        &:disabled {
+            background-color: lighten(v.$negro, 30%);
+            color: #fff;
+            cursor: not-allowed;
+        }
+    }
+
+}
+
+.acciones {
+        width: 85%;
+    display: flex;
+    justify-content: end;
+    padding: 2rem;
+    a {
+        color: black;
+    }
+    
+}

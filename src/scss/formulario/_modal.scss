@@ -1,0 +1,26 @@
+.modal-contenido {
+    background-color: #fff;
+    margin: 15% auto;
+    padding: 20px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 450px;
+    position: relative;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+/* Botón de cerrar (X) */
+.modal-cerrar {
+    position: absolute;
+    right: 15px;
+    top: 10px;
+    font-size: 28px;
+    cursor: pointer;
+    color: #aaa;
+}
+.modal-cerrar:hover { color: #000; }
+
+/* Clase utilitaria para mostrar el modal */
+.modal-mostrar {
+    display: block !important;
+}
