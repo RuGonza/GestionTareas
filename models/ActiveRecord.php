@@ -66,6 +66,7 @@ class ActiveRecord {
     // Busqueda Where con Columna 
     public static function where($columna, $valor) {
         $query = "SELECT * FROM " . static::$tabla . " WHERE $columna = '$valor'";
+        
         $resultado = self::consultarSQL($query);
         return array_shift( $resultado ) ;
     }
