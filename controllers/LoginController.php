@@ -53,7 +53,7 @@ class LoginController
                         $alertas = Usuarios::getAlertas();
                     } else {
                         $usuario->hashPassword();
-                    
+
                         $resultado = $usuario->guardar();
                         if($resultado) {
                             header("location: /");
